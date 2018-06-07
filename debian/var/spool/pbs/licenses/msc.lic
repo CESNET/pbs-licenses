@@ -1,0 +1,6 @@
+SERVER lm1.zcu.cz 00105a2fe8e6 3000
+SERVER lm2.zcu.cz 005004350811 3000
+SERVER lm3.zcu.cz 00500435059d 3000
+DAEMON MSC /afs/zcu.cz/software/flexlm/vendor/i386_linux24/msc port=3002
+
+

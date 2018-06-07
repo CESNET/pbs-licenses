@@ -1,0 +1,10 @@
+#!/bin/ksh
+
+# Vystup cist pres rouru, pri vystupu do souboru neceka na dokonceni.
+
+TIMEOUT=5
+#set -x
+
+/usr/local/bin/lmutil "$@" &
+exec 7>/dev/null
+ksh -c "sleep $TIMEOUT; kill -15 $!" </dev/null >/dev/null 2>&1 &

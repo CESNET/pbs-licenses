@@ -1,0 +1,46 @@
+#!/usr/bin/perl -w
+#
+my $ROOT=`grep -v "#" /etc/default/pbs_licenses | grep ROOT=  | sed -e 's/ROOT=//' -e 's/[ ]*//'`;
+chomp $ROOT;
+
+
+$debug = 0;
+while (defined($_ = shift(@ARGV))) {
+    if (/^-help/) {
+        print "usage: $0 [-debug] [-help]\n";
+        print "       where -help writes this screen\n";
+        print "             -debug turns debug messages on\n";
+        exit 0;
+    } elsif (/^-debug/) {
+        $debug = 1;             # no longer needed
+    } else {
+        print STDERR "usage: $0 [-debug] [-help]\n";
+        print STDERR "       where -help writes this screen\n";
+        print STDERR "             -debug turns debug messages on\n";
+        exit 1;
+    }
+}
+
+$lmstat = "$ROOT/generic.lmstat";
+
+&test();
+
+exit 0;
+
+# test subroutines
+sub dprint {
+    return if ( !$debug );
+    local($msg) = @_;
+    print "*** DEBUG ***: $msg";
+}
+
+sub test {
+    return if (!defined($lmstat));
+    local(@output) = `$lmstat -a -c -c /software/maple-16/license/license.dat`;
+    for ($i = 0; $i < $#output + 1; $i += 1) {
+        if ($output[$i] =~ /^Users of (\w*):  [(]Total of (\d*) licenses* issued;  Total of (\d*) licenses* in use[)]/) {
+		print lc "$1 ",$2-$3,"\n";
+        
+        }
+    }
+}

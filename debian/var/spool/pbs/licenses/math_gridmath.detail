@@ -1,0 +1,74 @@
+#!/usr/bin/perl -w
+#
+my $ROOT=`grep -v "#" /etc/default/pbs_licenses | grep ROOT=  | sed -e 's/ROOT=//' -e 's/[ ]*//'`;
+chomp $ROOT;
+
+
+$debug = 0;
+while (defined($_ = shift(@ARGV))) {
+    if (/^-help/) {
+        print "usage: $0 [-debug] [-help]\n";
+        print "       where -help writes this screen\n";
+        print "             -debug turns debug messages on\n";
+        exit 0;
+    } elsif (/^-debug/) {
+        $debug = 1;             # no longer needed
+    } else {
+        print STDERR "usage: $0 [-debug] [-help]\n";
+        print STDERR "       where -help writes this screen\n";
+        print STDERR "             -debug turns debug messages on\n";
+        exit 1;
+    }
+}
+
+$prefix = "$ROOT/";
+#$prefix = "/home/jeronimo/licenses/";
+$lmstat = "$prefix/math_gridmath.lmstat";
+
+&test();
+
+exit 0;
+
+# test subroutines
+sub dprint {
+    return if ( !$debug );
+    local($msg) = @_;
+    print "*** DEBUG ***: $msg";
+}
+
+# POZOR: Vse se vaze na radky s Kernelem/Subkernelem: v pripade startu GUI Mathematicy si tato bere Kernel licence trosicku pozdeji 
+# (jednotky sekund), takze muze dojit k situaci, kdy napr. pocet Mathematica licenci chvilku nesedi s poctem Kernel licenci
+#
+# INFO: Cele je to tvoreno skrze vlastni template, ponevadz standardni vypis nedava cele FQDN (zkracuje, at se to vejde do tabulky)
+
+sub test {
+    return if (!defined($lmstat));
+    my %pbshash;
+    my @pbsnodes = `$ROOT/listnodes`;
+    for ($i =  0; $i < $#pbsnodes + 1; $i += 1) {
+	$pbsnodes[$i] =~ /^([-a-z0-9.]+)/;
+	$pbshash{$1}=1;
+    }
+
+    my $metacount_mathematica = 0;
+    my $metacount_gridmathematica = 0;
+    local(@output) = `$lmstat skiritf.ics.muni.cz -template $prefix/math_gridmath.LMtemplate`;
+    for ($i = 0; $i < $#output + 1; $i += 1) {
+		if ($output[$i] =~ /^MathKernel\s+(\d+)\s+(\d+)$/) {
+			$feature_mathematica = "mathematica";
+			$licavail_mathematica = $2-$1;
+        }
+		if ($output[$i] =~ /^SubMathKernel\s+(\d+)\s+(\d+)$/) {
+			$feature_gridmathematica = "gridmathematica";
+			$licavail_gridmathematica = $2-$1;
+        }
+		if ($output[$i] =~ /^MathKernel\s+([-a-z0-9.]+cz)$/) {
+			$metacount_mathematica++ if exists $pbshash{$1};
+		}
+		if ($output[$i] =~ /^SubMathKernel\s+([-a-z0-9.]+cz)$/) {
+			$metacount_gridmathematica++ if exists $pbshash{$1};
+		}
+    }
+    print "$feature_mathematica $licavail_mathematica;$metacount_mathematica\n";
+    print "$feature_gridmathematica $licavail_gridmathematica;$metacount_gridmathematica\n";
+}

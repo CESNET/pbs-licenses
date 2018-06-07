@@ -1,0 +1,65 @@
+#!/usr/bin/perl -w
+
+my $ROOT=`grep -v "#" /etc/default/pbs_licenses | grep ROOT=  | sed -e 's/ROOT=//' -e 's/[ ]*//'`;
+chomp $ROOT;
+
+
+$debug = 0;
+while (defined($_ = shift(@ARGV))) {
+    if (/^-help/) {
+        print "usage: $0 [-debug] [-help]\n";
+        print "       where -help writes this screen\n";
+        print "             -debug turns debug messages on\n";
+        exit 0;
+    } elsif (/^-debug/) {
+        $debug = 1;             # no longer needed
+    } else {
+        print STDERR "usage: $0 [-debug] [-help]\n";
+        print STDERR "       where -help writes this screen\n";
+        print STDERR "             -debug turns debug messages on\n";
+        exit 1;
+    }
+}
+
+$lmstat = "$ROOT/ansys.lmstat";
+
+&test();
+
+exit 0;
+
+# test subroutines
+sub dprint {
+    return if ( !$debug );
+    local($msg) = @_;
+    print "*** DEBUG ***: $msg";
+}
+
+sub test {
+    return if (!defined($lmstat));
+    my %pbshash;
+    my @pbsnodes = `$ROOT/listnodes`;
+    for ($i =  0; $i < $#pbsnodes + 1; $i += 1) {
+	$pbsnodes[$i] =~ /^([-a-z0-9.]+)/;
+	$pbshash{$1}=1;
+    }
+
+    my $metacount = 0;
+    my $nlines = 0;
+    local(@output) = `$lmstat lmstat -c /software/ansys-15/v150/fluent/license/license.dat -S ansyslmd`;
+    for ($i = 0; $i < $#output + 1; $i += 1) {
+		if ($output[$i] =~ /^Users of (\w+):\s+\(Total of (\d+) license[s]* issued;\s+Total of (\d+) license[s]* in use\)$/) {
+			print $metacount,"\n" if $nlines!=0;
+			$metacount = 0;
+			$feature = $1;
+			$lic_count = $2-$3;
+			$feature =~ s/.*_//;
+			print "ansys-$feature $lic_count;";
+			$nlines++;
+        }
+
+		if ($output[$i] =~ /^\s+\w+ ([-a-z0-9.]+cz) ([-a-z0-9.]+cz) \(v\d+/) {
+			$metacount++ if exists $pbshash{$1};
+		}
+    }
+    print $metacount,"\n" if $nlines!=0;
+}

@@ -1,0 +1,8 @@
+#!/bin/ksh
+TIMEOUT=20
+
+pgrp=$$
+set +m
+ksh -c "sleep $TIMEOUT; kill -15 -$pgrp" </dev/null >/dev/null 2>&1 &
+/software/ansys-15/shared_files/licensing/linx64/lmutil "$@"
+kill -15 -$! 2>/dev/null

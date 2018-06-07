@@ -1,0 +1,16 @@
+# ==========================================
+# SERVER SECTION
+# ==========================================
+# Information for System Administrators:
+# This license file should be placed in the same directory as
+# the license manager daemons (lmgrd and maplelmg).
+#
+# The license manager daemon, lmgrd, must be started prior to
+# starting Maple.
+#
+# The servername field can be changed by the system administrator.
+# For network installations of Maple, please ensure the servername
+# and hostid match in both server and client license files.
+
+SERVER skirit.ics.muni.cz 000bcdfdbc8d
+USE_SERVER

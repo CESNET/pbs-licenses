@@ -1,0 +1,13 @@
+#!/usr/bin/make -f
+
+# Uncomment this to turn on verbose mode.
+export DH_VERBOSE=1
+
+CC=gcc
+CFLAGS= -std=c99 -pedantic -g -g -ggdb
+
+build: get_license.c
+		$(CC) $(CFLAGS) get_license.c -o get_license -lpbscache -l sqlite3
+		
+install: build
+		cp ./get_license ./debian/var/spool/pbs/

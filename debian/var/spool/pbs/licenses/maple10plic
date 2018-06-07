@@ -1,0 +1,5 @@
+#!/bin/sh
+
+. /etc/default/pbs_licenses
+
+expr `$ROOT/check-license Maple10` + `$ROOT/check-license Maple11`

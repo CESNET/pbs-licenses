@@ -1,0 +1,6 @@
+Package: pbs-licenses
+Version: 1.0.0-4
+Architecture: amd64
+Maintainer: Václav Chlumský <vchlumsky@cesnet.cz>
+Description: PBS Licenses
+ PBS Licenses is software for managing licenses for PBS jobs.

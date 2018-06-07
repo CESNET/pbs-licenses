@@ -1,0 +1,2 @@
+#!/bin/sh
+pbsnodes -a 2>/dev/null |awk '/^[a-z]/{n=$1;}$1=="Mom" {n=$3;}/^$/{print n;}'

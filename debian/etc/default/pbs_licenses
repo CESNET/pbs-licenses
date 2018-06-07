@@ -1,0 +1,4 @@
+ROOT=/var/spool/pbs/licenses
+SERVER_NAME=147.251.252.29
+ALL_SINGLE='ansys fluent marc marcn maple10 maple10p maple11 matlab sokar maple geneious clcgenomics'
+ADD_ON='ansys.sh math_gridmath.sh'

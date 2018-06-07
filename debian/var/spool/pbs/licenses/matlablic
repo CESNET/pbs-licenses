@@ -1,0 +1,59 @@
+#!/usr/bin/perl -w
+
+my $ROOT=`grep -v "#" /etc/default/pbs_licenses | grep ROOT=  | sed -e 's/ROOT=//' -e 's/[ ]*//'`;
+chomp $ROOT;
+
+
+$debug = 0;
+while (defined($_ = shift(@ARGV))) {
+    if (/^-help/) {
+        print "usage: $0 [-debug] [-help]\n";
+        print "       where -help writes this screen\n";
+        print "             -debug turns debug messages on\n";
+        exit 0;
+    } elsif (/^-debug/) {
+        $debug = 1;             # no longer needed
+    } else {
+        print STDERR "usage: $0 [-debug] [-help]\n";
+        print STDERR "       where -help writes this screen\n";
+        print STDERR "             -debug turns debug messages on\n";
+        exit 1;
+    }
+}
+
+$lmstat = "$ROOT/matlablic.lmstat";
+#$lmstat = "/software/matlab-6.5/etc/lmstat";
+
+&test();
+
+exit 0;
+
+# test subroutines
+sub dprint {
+    return if ( !$debug );
+    local($msg) = @_;
+    print "*** DEBUG ***: $msg";
+}
+
+sub test {
+    return if (!defined($lmstat));
+    local(@output) = `$lmstat -a`;
+    for ($i = 0; $i < $#output + 1; $i += 1) {
+        if ( ($output[$i] =~ /^Users of MATLAB:/) ) {
+           ($all) = ($output[$i] =~ /^Users of MATLAB:[ ]*[(]Total of ([^ ]*)/);
+           $used = 0;
+           $i += 2;
+           if ( ($output[$i] =~ /^Users of.*/) ) {
+                printf("%d\n",$all);
+                exit 0;
+           } else {
+                for ( $i += 3; !($output[$i] =~ /^[ ]*\n/); $i += 1 ) {
+                    &dprint("$output[$i]");
+                    $used += 1;
+                }
+                printf("%d\n",$all - $used);
+                exit 0;
+           }
+        }
+    }
+}
