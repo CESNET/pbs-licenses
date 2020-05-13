@@ -1,5 +1,5 @@
 Package: pbs-licenses
-Version: 1.0.0-4
+Version: 1.0.0-5
 Architecture: amd64
 Maintainer: Václav Chlumský <vchlumsky@cesnet.cz>
 Description: PBS Licenses
