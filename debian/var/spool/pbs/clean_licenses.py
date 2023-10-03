@@ -41,7 +41,8 @@ except:
 running_jobs = get_running_jobs()
 jobs_to_remove = []
 for row in c.execute('SELECT job_id FROM licenses'):
-    if not row[0] in running_jobs:
+    short_job_id = '.'.join(row[0].split('.')[0:2])
+    if not short_job_id in running_jobs:
         jobs_to_remove.append(row[0])
 
 # licence nebezicich jobu odeberu
