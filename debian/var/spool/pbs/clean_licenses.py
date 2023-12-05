@@ -9,6 +9,8 @@ def get_running_jobs():
     running_jobs=[]
 
     os.environ["PBSPRO_IGNORE_KERBEROS"] = "1"
+    os.environ["PBS_AUTH_METHOD"] = "resvport"
+    os.environ["PBS_ENCRYPT_METHOD"] = ""
 
     try:
         process = subprocess.Popen("qstat", stdout=subprocess.PIPE)

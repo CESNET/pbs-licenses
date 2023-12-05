@@ -1,3 +1,5 @@
 #!/bin/sh
 export PBSPRO_IGNORE_KERBEROS=1
+export PBS_AUTH_METHOD=resvport
+export PBS_ENCRYPT_METHOD=
 pbsnodes -a 2>/dev/null |awk '/^[a-z]/{n=$1;}$1=="Mom" {n=$3;}/^$/{print n;}'
